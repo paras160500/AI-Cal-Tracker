@@ -20,7 +20,7 @@ function InitialLayout() {
       // Redirect to sign-in if not signed in and not in auth group
       router.replace("/(auth)/signin");
     }
-  }, [isSignedIn, isLoaded, segments]);
+  }, [isSignedIn, isLoaded, segments, router]);
 
   return (
     <Stack screenOptions={{ headerShown: false }}>

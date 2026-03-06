@@ -28,7 +28,15 @@ export const useUserSync = () => {
                         createdAt: serverTimestamp(),
                         updatedAt: serverTimestamp(),
                     }, { merge: true });
-                    console.log('✅ User synced to Firestore');
+                    console.log('✅ User created in Firestore');
+                } else {
+                    await setDoc(userRef, {
+                        email: user.primaryEmailAddress?.emailAddress,
+                        fullName: user.fullName,
+                        imageUrl: user.imageUrl,
+                        updatedAt: serverTimestamp(),
+                    }, { merge: true });
+                    console.log('✅ User profile updated in Firestore');
                 }
             } catch (error: any) {
                 console.error('❌ Error syncing user to Firestore:', error);

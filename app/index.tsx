@@ -54,9 +54,14 @@ export default function Index() {
   // Sync user data to Firestore on load
   useUserSync();
 
-  const onLogoutPress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    signOut();
+  const onLogoutPress = async () => {
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      await signOut();
+    } catch (err) {
+      console.error('Logout error', err);
+      alert('Failed to sign out. Please try again.');
+    }
   };
 
   const animatedButtonStyle = useAnimatedStyle(() => ({
@@ -90,10 +95,20 @@ export default function Index() {
             <Text style={styles.userNameText}>{user?.firstName || 'Healthy Friend'}</Text>
           </View>
           <View style={styles.headerActions}>
-            <TouchableOpacity style={styles.circleBtn}>
+            <TouchableOpacity
+              style={styles.circleBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Notifications"
+              onPress={() => alert('Notifications coming soon!')}
+            >
               <Bell size={22} color="#1E293B" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={onLogoutPress} style={[styles.circleBtn, styles.logoutBtn]}>
+            <TouchableOpacity
+              onPress={onLogoutPress}
+              style={[styles.circleBtn, styles.logoutBtn]}
+              accessibilityRole="button"
+              accessibilityLabel="Logout"
+            >
               <LogOut size={22} color={Colors.light.error} />
             </TouchableOpacity>
           </View>

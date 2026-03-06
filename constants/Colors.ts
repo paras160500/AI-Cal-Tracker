@@ -28,5 +28,6 @@ export const Colors = {
         error: '#FF453A',
         primary: '#0A84FF',
         secondary: '#5E5CE6',
+        brand: '#10B981',
     },
 };

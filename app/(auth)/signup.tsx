@@ -49,8 +49,10 @@ export default function SignUpScreen() {
             await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
             setPendingVerification(true);
         } catch (err: any) {
+            console.error(JSON.stringify(err, null, 2));
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-            alert(err.errors[0]?.message || 'Sign up failed');
+            const msg = err?.errors?.[0]?.message ?? err?.message ?? 'Sign up failed';
+            alert(msg);
         } finally {
             setLoading(false);
         }
@@ -68,9 +70,14 @@ export default function SignUpScreen() {
             if (completeSignUp.status === 'complete') {
                 await setActive({ session: completeSignUp.createdSessionId });
                 router.replace('/');
+            } else if (completeSignUp.status) {
+                console.log('Verification incomplete', completeSignUp.status);
+                alert(`Action required: ${completeSignUp.status.replace(/_/g, ' ')}`);
             }
         } catch (err: any) {
-            alert(err.errors[0]?.message || 'Verification failed');
+            console.error(JSON.stringify(err, null, 2));
+            const msg = err?.errors?.[0]?.message ?? err?.message ?? 'Verification failed';
+            alert(msg);
         } finally {
             setLoading(false);
         }

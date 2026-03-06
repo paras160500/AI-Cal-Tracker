@@ -42,21 +42,45 @@ export default function SignInScreen() {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
         try {
-            const signInAttempt = await signIn.create({
+            const result = await signIn.create({
                 identifier: emailAddress,
                 password,
             });
 
-            if (signInAttempt.status === 'complete') {
-                await setActive({ session: signInAttempt.createdSessionId });
+            if (result.status === 'complete') {
+                await setActive({ session: result.createdSessionId });
                 router.replace('/');
+            } else if (result.status) {
+                console.log('Incomplete status', result.status);
+                alert(`Action required: ${result.status.replace(/_/g, ' ')}`);
             }
         } catch (err: any) {
+            console.error(JSON.stringify(err, null, 2));
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-            alert(err.errors[0]?.message || 'Sign in failed');
+            const msg = err?.errors?.[0]?.message ?? err?.message ?? 'Sign in failed';
+            alert(msg);
         } finally {
             setLoading(false);
         }
+    };
+
+    const onPressGoogle = async () => {
+        try {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            const { createdSessionId, setActive: setOAuthActive } = await startGoogleOAuth();
+            if (createdSessionId && setOAuthActive) {
+                await setOAuthActive({ session: createdSessionId });
+                router.replace('/');
+            }
+        } catch (err: any) {
+            console.error('OAuth Error', err);
+            alert(err?.errors?.[0]?.message ?? 'Google Sign In failed');
+        }
+    };
+
+    const onForgotPassword = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        alert('Password reset flow initiated. Check your email (Mockup)');
     };
 
     return (
@@ -127,7 +151,12 @@ export default function SignInScreen() {
                                     </View>
                                 </View>
 
-                                <TouchableOpacity style={styles.forgotBtn}>
+                                <TouchableOpacity
+                                    onPress={onForgotPassword}
+                                    style={styles.forgotBtn}
+                                    accessibilityRole="button"
+                                    accessibilityLabel="Forgot Password"
+                                >
                                     <Text style={styles.forgotText}>Forgot Password?</Text>
                                 </TouchableOpacity>
 
@@ -151,7 +180,13 @@ export default function SignInScreen() {
                                     <View style={styles.line} />
                                 </View>
 
-                                <TouchableOpacity style={styles.googleBtn} activeOpacity={0.8}>
+                                <TouchableOpacity
+                                    onPress={onPressGoogle}
+                                    style={styles.googleBtn}
+                                    activeOpacity={0.8}
+                                    accessibilityRole="button"
+                                    accessibilityLabel="Sign in with Google"
+                                >
                                     <Chrome size={20} color="#1A1A1A" />
                                     <Text style={styles.googleBtnText}>Sign In with Google</Text>
                                 </TouchableOpacity>
