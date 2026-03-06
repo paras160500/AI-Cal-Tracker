@@ -12,7 +12,7 @@ export const useUserSync = () => {
 
             // Check if Firebase is likely configured
             if (!process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID) {
-                console.warn('⚠️ Firebase Project ID is missing. Firestore sync will not work. Please check your .env file.');
+                console.warn('⚠️     Firebase Project ID is missing. Firestore sync will not work. Please check your .env file.');
                 return;
             }
 
